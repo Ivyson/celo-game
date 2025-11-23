@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
-
-import Equation from './Equations';
 import useQuiz from '../hooks/useQuiz';
 import Results from './Results';
 import MathText from '../utils/MathTex';
 
-const Quiz = ({ initialLevel = 1 }) => {
-  // use the local `level` for the hook so updating level re-runs the hook
-  const [level, setLevel] = useState(initialLevel);
-
+const Quiz = ({ level, setLevel }) => {
   const {
     currentQuestion,
     currentQuestionIndex,
@@ -17,32 +12,34 @@ const Quiz = ({ initialLevel = 1 }) => {
     isQuizFinished,
     totalQuestions,
     answerHistory,
-    showSolution,
     handleAnswerSubmission,
     nextQuestion,
     resetQuiz,
-    // If your hook exposes a hideSolution or clearSolution, use it here:
-    // hideSolution,
   } = useQuiz(level);
 
-  // removed unused showResults state
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // compute accuracy as percent (guard division by zero)
-  const accuracy = totalQuestions ? Math.round((score / totalQuestions) * 100) : 0;
+  // showSolution relies on selectedAnswer NOT being null.
+  const showSolution = selectedAnswer !== null; 
+  
+  // Adjusted accuracy to be based on questions answered so far, not total exam length
+  const questionsAnswered = currentQuestionIndex + (showSolution ? 1 : 0);
+  const accuracy = questionsAnswered > 0 ? Math.round((score / questionsAnswered) * 100) : 0;
 
   useEffect(() => {
     setIsAnimating(true);
     const timer = setTimeout(() => setIsAnimating(false), 500);
     return () => clearTimeout(timer);
-  }, [currentQuestionIndex, level /* include level if you want animation on level change */]);
+  }, [currentQuestionIndex, level]);
 
   const handleNextLevel = (nextLevel) => {
-    setLevel(nextLevel);
-    // If your hook needs to be reset when level changes, call resetQuiz or a hook-provided method:
-    if (typeof resetQuiz === 'function') resetQuiz(nextLevel);
-    // If hook doesn't accept the new level automatically, ensure useQuiz(level) triggers refetch
+    if (typeof setLevel === 'function') {
+      setLevel(nextLevel);
+    }
+    if (typeof resetQuiz === 'function') {
+      resetQuiz();
+    }
   };
 
   if (isQuizFinished) {
@@ -75,9 +72,11 @@ const Quiz = ({ initialLevel = 1 }) => {
   };
 
   const handleSubmit = () => {
-    // explicitly check for null/undefined to allow falsy answers like 0
     if (selectedAnswer == null) return;
+    
     if (typeof handleAnswerSubmission === 'function') {
+      // FIX 1: Do NOT set selectedAnswer to null here.
+      // We need it to remain populated so 'showSolution' stays true.
       handleAnswerSubmission(selectedAnswer);
     } else {
       console.warn('handleAnswerSubmission is not a function');
@@ -85,8 +84,9 @@ const Quiz = ({ initialLevel = 1 }) => {
   };
 
   const handleNext = () => {
+    // FIX 2: Clear the answer ONLY when moving to the next question
     setSelectedAnswer(null);
-    // Ensure the hook advances and hides the solution; the hook should clear showSolution on nextQuestion
+    
     if (typeof nextQuestion === 'function') {
       nextQuestion();
     } else {
@@ -96,8 +96,6 @@ const Quiz = ({ initialLevel = 1 }) => {
 
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
   const progress = totalQuestions ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-
-  // defensive defaults for arrays
   const answers = Array.isArray(currentQuestion.answers) ? currentQuestion.answers : [];
   const solutionSteps = Array.isArray(currentQuestion.solution) ? currentQuestion.solution : [];
 
@@ -156,9 +154,7 @@ const Quiz = ({ initialLevel = 1 }) => {
               </div>
               <div className="flex-1">
                 <h3 className="text-2xl md:text-3xl font-bold text-gray-900 leading-relaxed">
-                  {/* {currentQuestion.background ?? ''} */}
-                  {/* <Equation equation={currentQuestion.question} display={false} /> */}
-                  {<MathText text={currentQuestion.background + currentQuestion.question} />}
+                  {<MathText text={currentQuestion.background + " " + currentQuestion.question} />}
                 </h3>
               </div>
             </div>
@@ -178,8 +174,6 @@ const Quiz = ({ initialLevel = 1 }) => {
             {answers.map((answer, index) => {
               const isSelected = selectedAnswer === answer;
               const isCorrectAnswer = answer === currentQuestion.correctAnswer;
-
-              // build classes safely (you could also use clsx or classnames)
               let buttonClass = 'group relative w-full text-left p-5 md:p-6 rounded-2xl transition-all duration-300 transform ';
 
               if (showSolution) {
@@ -195,8 +189,6 @@ const Quiz = ({ initialLevel = 1 }) => {
               } else {
                 buttonClass += 'bg-white border-gray-300 hover:border-primary-400 hover:shadow-lg';
               }
-
-              // Prefer a stable key if possible (use answer if it's unique)
               const key = typeof answer === 'string' ? answer : index;
 
               return (
@@ -222,7 +214,7 @@ const Quiz = ({ initialLevel = 1 }) => {
                     </div>
 
                     <span className="flex-1 font-semibold text-gray-800 text-lg">
-                      <Equation equation={answer} display={false} />
+                      <MathText text={answer} />
                     </span>
 
                     {showSolution && isCorrectAnswer && (
@@ -271,7 +263,7 @@ const Quiz = ({ initialLevel = 1 }) => {
                           {idx + 1}
                         </span>
                         <p className="text-gray-700 leading-relaxed font-medium flex-1">
-                          {step}
+                          {<MathText text={step} />}
                         </p>
                       </div>
                     ))}
@@ -302,6 +294,7 @@ const Quiz = ({ initialLevel = 1 }) => {
               </>
             ) : (
               <button
+                // FIX 3: Point this to handleNext, NOT handleSubmit
                 onClick={handleNext}
                 className="flex-1 bg-gradient-to-r from-primary-600 to-purple-600 text-white font-black text-lg py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95"
                 type="button"

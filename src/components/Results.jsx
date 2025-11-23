@@ -1,6 +1,5 @@
-import Equation from "./Equations";
-
-// src/components/Results.jsx
+// import Equation from "./Equations";
+import MathText from "../utils/MathTex";
 const Results = ({
   score = 0,
   totalQuestions = 0,
@@ -30,11 +29,15 @@ const Results = ({
 
   const handleNextLevel = () => {
     if (typeof onNextLevel === "function") {
-      // signal parent to advance level
+      if (currentLevel < 4)
       onNextLevel(currentLevel + 1);
+    else{
+      onNextLevel(1); // reset to level 1 
     }
-    // optionally reset local quiz state (if provided)
-    if (typeof resetQuiz === "function") resetQuiz();
+    }
+    if (typeof resetQuiz === "function") {
+      resetQuiz();
+    }
   };
 
   return (
@@ -139,7 +142,7 @@ const Results = ({
                           <div className="flex-1">
                             <div className="flex items-start justify-between gap-4 mb-3">
                               <p className="font-bold text-gray-900 text-lg leading-relaxed">
-                                Q{index + 1}: {questionText}
+                                Q{index + 1}: <MathText text={questionText} />
                               </p>
                               {isCorrect && (
                                 <div className="flex-shrink-0 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-black shadow-md">
@@ -152,14 +155,14 @@ const Results = ({
                               <div className={`font-semibold ${isCorrect ? "text-success-700" : "text-danger-700"}`}>
                                 Your answer:{" "}
                                 <span className="font-black">
-                                  <Equation equation={selected} display={false} />
+                                  <MathText text={selected} />
                                 </span>
                               </div>
                               {!isCorrect && (
                                 <div className="text-success-700 font-semibold">
                                   Correct answer:{" "}
                                   <span className="font-black">
-                                    <Equation equation={correct} display={false} />
+                                    <MathText text={correct} />
                                   </span>
                                 </div>
                               )}
@@ -193,7 +196,6 @@ const Results = ({
 
               <button
                 type="button"
-                // placeholder: wire up leaderboard fetch when auth available
                 onClick={() => console.log("Leaderboard clicked")}
                 className="bg-white border-2 border-gray-300 text-gray-800 font-black py-5 px-6 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 transform hover:scale-105 active:scale-95 text-lg"
               >

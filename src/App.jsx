@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import MathText from './utils/MathTex';
+// import MathText from './utils/MathTex';
 // import "katex"
 // import 'katex/dist/katex.min.css';
-import { BlockMath, InlineMath } from 'react-katex';
+// import { BlockMath, InlineMath } from 'react-katex';
 import Quiz from './components/Quiz';
+import { useAuth } from './components/Landing_Page';
 import './styles/App.css';
 
 
@@ -11,13 +12,41 @@ import './styles/App.css';
 
 function App() {
   const [selectedLevel, setSelectedLevel] = useState(null);
-
+  const { currentUser, logout } = useAuth();
   if (selectedLevel) {
-    return <Quiz level={selectedLevel} />;
+    console.log("Selected Level:", selectedLevel);
+    return <Quiz level={selectedLevel} setLevel={setSelectedLevel} />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 relative overflow-hidden">
+        {/* User Authentication Bar */}
+      <div className="relative z-20">
+        {currentUser ? (
+          <div className="flex items-center justify-end gap-4 p-6">
+            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 shadow-lg">
+              <span className="text-white font-semibold">
+                👤 <strong className="font-bold">{currentUser.username}</strong>
+              </span>
+            </div>
+            <button 
+              onClick={logout} 
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              Sign out →
+            </button>
+          </div>
+        ) : (
+          <div className="flex justify-end p-6">
+            <a 
+              href="./login.html" 
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg inline-block"
+            >
+              Sign in →
+            </a>
+          </div>
+        )}
+      </div>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-glow"></div>
@@ -35,7 +64,7 @@ function App() {
             MathQuest
           </h1>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-semibold leading-relaxed drop-shadow-lg">
-            Master College mathematics while earning virtual rewards.
+            Master College mathematics while earning virtual Coins.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 text-white font-bold shadow-lg">
@@ -106,6 +135,9 @@ function App() {
               </div>
             </div>
 
+
+
+
             {/* Level 2 Card */}
             <div className="group bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-glow-lg animate-scale-in" style={{ animationDelay: '0.1s' }}>
               <div className="bg-gradient-to-br from-blue-400 to-indigo-500 p-8 relative overflow-hidden">
@@ -131,7 +163,7 @@ function App() {
                     <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
                       ⏱️
                     </div>
-                    <span className="font-bold text-lg">3 Questions</span>
+                    <span className="font-bold text-lg">5  Questions</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
@@ -139,6 +171,8 @@ function App() {
                     </div>
                     <span className="font-bold text-lg">15 Tokens per question</span>
                   </div>
+
+                  
                 </div>
                 
                 <button
@@ -149,6 +183,100 @@ function App() {
                 </button>
               </div>
             </div>
+            {/* Level 3 Card */}
+            <div className="group bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-glow-lg animate-scale-in" style={{ animationDelay: '0.1s' }}>
+              <div className="bg-gradient-to-br from-blue-400 to-indigo-500 p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2"></div>
+                <div className="relative z-10 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-4xl font-black text-white drop-shadow-lg mb-2">Level 3</h3>
+                    <p className="text-2xl text-blue-50 font-bold">Advanced</p>
+                  </div>
+                  <div className="text-7xl animate-bounce-subtle" style={{ animationDelay: '0.2s' }}>🔥</div>
+                </div>
+              </div>
+              
+              <div className="p-8">
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      📚
+                    </div>
+                    <span className="font-bold text-lg">Vectors & Advanced Calculus</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      ⏱️
+                    </div>
+                    <span className="font-bold text-lg">5  Questions</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      🪙
+                    </div>
+                    <span className="font-bold text-lg">20 Tokens per question</span>
+                  </div>
+
+                  
+                </div>
+                
+                <button
+                  onClick={() => setSelectedLevel(3)}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-xl py-5 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl"
+                >
+                  Start Level 3 →
+                </button>
+              </div>
+            </div>
+
+            {/* Level 4  */}
+            <div className="group bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-glow-lg animate-scale-in" style={{ animationDelay: '0.1s' }}>
+              <div className="bg-gradient-to-br from-blue-400 to-indigo-500 p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2"></div>
+                <div className="relative z-10 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-4xl font-black text-white drop-shadow-lg mb-2">Level 4</h3>
+                    <p className="text-2xl text-blue-50 font-bold">Expert</p>
+                  </div>
+                  <div className="text-7xl animate-bounce-subtle" style={{ animationDelay: '0.2s' }}>⚡</div>
+                </div>
+              </div>
+              
+              <div className="p-8">
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      📚
+                    </div>
+                    <span className="font-bold text-lg">Advanced Probability & Linear Algebra</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      ⏱️
+                    </div>
+                    <span className="font-bold text-lg">5  Questions</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      🪙
+                    </div>
+                    <span className="font-bold text-lg">25 Tokens per question</span>
+                  </div>
+
+                  
+                </div>
+                
+                <button
+                  onClick={() => setSelectedLevel(4)}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-xl py-5 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl"
+                >
+                  Start Level 4 →
+                </button>
+              </div>
+            </div>
+            
+
+            
           </div>
         </div>
 
@@ -183,9 +311,9 @@ function App() {
               {/* {katex.render("E=mc^2", document.createElement('div'), {
                 throwOnError: false
               }) /* KaTeX test */} 
-              <div className="main-question">
-            <MathText text={"Hello World My Equation is \\(E=mc^2\\)"} />
-      </div>
+              {/* <div className="main-question">
+            {/* <MathText text={"Hello World My Equation is \\(E=mc^2\\)"} /> */}
+      {/* </div> */}
 
               <div className="text-center transform transition-all duration-300 hover:scale-110">
                 <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-white/30">
@@ -225,7 +353,7 @@ function App() {
 
       {/* Footer */}
       <div className="text-center py-10 text-white/60 text-sm font-semibold relative z-10">
-        <p>🔗 Powered by Celo Blockchain • 🎓 Built for College Students • 💡 Learn, Earn, Succeed</p>
+        <p>Powered by Celo Blockchain • Learn, Earn, Succeed</p>
       </div>
     </div>
   );

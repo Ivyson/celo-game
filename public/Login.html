@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign in — Celo Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-pink-800 flex items-center justify-center p-6">
+  <main class="w-full max-w-lg bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="p-8 sm:p-10">
+      <header class="mb-6 text-center">
+        <div class="inline-flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-black text-xl">CG</div>
+          <div class="text-left">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Sign in</h1>
+            <p class="text-sm text-white/80 mt-1">Welcome back — resume your progress.</p>
+          </div>
+        </div>
+      </header>
+
+      <form id="loginForm" class="space-y-4" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-semibold text-white/90 mb-1">Email</label>
+          <input id="email" name="email" type="email" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="you@example.com" />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-semibold text-white/90 mb-1">Password</label>
+          <input id="password" name="password" type="password" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Password (not required for demo)" />
+          <p class="text-xs text-white/60 mt-1">Demo signup does not store passwords — we authenticate by email only.</p>
+        </div>
+
+        <div id="formError" class="text-sm text-red-400 hidden"></div>
+
+        <div class="pt-2">
+          <button id="submitBtn" type="submit" class="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-extrabold text-lg shadow-lg hover:scale-[1.01] transition-transform">
+            Sign in
+          </button>
+        </div>
+
+        <p class="text-center text-sm text-white/70 mt-3">
+          Don't have an account?
+          <a href="/sing_up.html" class="text-white font-semibold underline ml-1">Create account</a>
+        </p>
+      </form>
+
+      <div id="successBox" class="mt-6 hidden bg-white/5 border border-white/10 p-4 rounded-lg text-white/90">
+        <strong>Signed in.</strong>
+        <p id="welcomeText" class="mt-2 text-sm text-white/80"></p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const formError = document.getElementById('formError');
+    const successBox = document.getElementById('successBox');
+    const welcomeText = document.getElementById('welcomeText');
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      formError.classList.add('hidden');
+      successBox.classList.add('hidden');
+
+      const email = form.email.value.trim();
+      const password = form.password.value; // not used for demo auth
+
+      if (!validateEmail(email)) return showError('Please enter a valid email address.');
+
+      const users = JSON.parse(localStorage.getItem('cg_users') || '[]');
+      const user = users.find(u => u.email === email);
+
+      if (!user) return showError('No account found for that email. Create one first.');
+
+      // Demo behavior: signup did not store passwords, so authenticate by email only.
+      const currentUser = { id: user.id, username: user.username, email: user.email, wallet: user.wallet || null, signedInAt: new Date().toISOString() };
+      localStorage.setItem('cg_currentUser', JSON.stringify(currentUser));
+
+      welcomeText.textContent = `Hello ${user.username}. Your session is stored locally (cg_currentUser).`;
+
+      successBox.classList.remove('hidden');
+      form.reset();
+       window.location.href = './index.html';
+    });
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
