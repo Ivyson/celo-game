@@ -12,18 +12,15 @@ const Quiz = ({ level, setLevel }) => {
     isQuizFinished,
     totalQuestions,
     answerHistory,
+    currentOptions,
     handleAnswerSubmission,
-    nextQuestion,
     resetQuiz,
   } = useQuiz(level);
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // showSolution relies on selectedAnswer NOT being null.
   const showSolution = selectedAnswer !== null; 
-  
-  // Adjusted accuracy to be based on questions answered so far, not total exam length
   const questionsAnswered = currentQuestionIndex + (showSolution ? 1 : 0);
   const accuracy = questionsAnswered > 0 ? Math.round((score / questionsAnswered) * 100) : 0;
 
@@ -71,32 +68,32 @@ const Quiz = ({ level, setLevel }) => {
     setSelectedAnswer(answer);
   };
 
-  const handleSubmit = () => {
-    if (selectedAnswer == null) return;
+  // const handleSubmit = () => {
+  //   if (selectedAnswer == null) return;
+    
+  //   if (typeof handleAnswerSubmission === 'function') {
+  //     handleAnswerSubmission(selectedAnswer);
+  //   } else {
+  //     console.warn('handleAnswerSubmission is not a function');
+  //   }
+  // };
+
+  const handleNext = () => {
+
+    setSelectedAnswer(null);
+    
+   if (selectedAnswer == null) return;
     
     if (typeof handleAnswerSubmission === 'function') {
-      // FIX 1: Do NOT set selectedAnswer to null here.
-      // We need it to remain populated so 'showSolution' stays true.
       handleAnswerSubmission(selectedAnswer);
     } else {
       console.warn('handleAnswerSubmission is not a function');
     }
   };
 
-  const handleNext = () => {
-    // FIX 2: Clear the answer ONLY when moving to the next question
-    setSelectedAnswer(null);
-    
-    if (typeof nextQuestion === 'function') {
-      nextQuestion();
-    } else {
-      console.warn('nextQuestion is not a function');
-    }
-  };
-
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
   const progress = totalQuestions ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-  const answers = Array.isArray(currentQuestion.answers) ? currentQuestion.answers : [];
+  const answers = Array.isArray(currentOptions) ? currentOptions : [];
   const solutionSteps = Array.isArray(currentQuestion.solution) ? currentQuestion.solution : [];
 
   return (
@@ -277,7 +274,7 @@ const Quiz = ({ level, setLevel }) => {
             {!showSolution ? (
               <>
                 <button
-                  onClick={handleSubmit}
+                  onClick={handleNext}
                   disabled={selectedAnswer == null}
                   className="flex-1 bg-gradient-to-r from-primary-600 to-purple-600 text-white font-black text-lg py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50"
                   type="button"
@@ -294,8 +291,7 @@ const Quiz = ({ level, setLevel }) => {
               </>
             ) : (
               <button
-                // FIX 3: Point this to handleNext, NOT handleSubmit
-                onClick={handleNext}
+                onClick={ () => { handleNext(); } }
                 className="flex-1 bg-gradient-to-r from-primary-600 to-purple-600 text-white font-black text-lg py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95"
                 type="button"
               >
