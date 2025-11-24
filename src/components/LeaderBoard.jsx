@@ -69,7 +69,7 @@ const Leaderboard = ({ isOpen, onClose, tokens = 0, score = 0 }) => {
               onClick={onClose}
               className="w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/30"
             >
-              <span className="text-3xl">×clser</span>
+              <span className="text-3xl">x</span>
             </button>
           </div>
         </div>
@@ -85,7 +85,7 @@ const Leaderboard = ({ isOpen, onClose, tokens = 0, score = 0 }) => {
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
               }`}
             >
-              🌍 Global
+              Global
             </button>
             <button
               onClick={() => setActiveTab('level')}
@@ -95,7 +95,7 @@ const Leaderboard = ({ isOpen, onClose, tokens = 0, score = 0 }) => {
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
               }`}
             >
-              📊 By Level
+              By Level
             </button>
           </div>
         </div>
@@ -229,7 +229,7 @@ const Leaderboard = ({ isOpen, onClose, tokens = 0, score = 0 }) => {
         <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-6 border-t border-gray-300">
           <div className="text-center">
             <p className="text-gray-700 font-bold text-lg mb-2">
-              🎯 Compete with students worldwide!
+              Compete with students worldwide!
             </p>
             <p className="text-gray-600 font-semibold text-sm">
               Rankings update in real-time • Earn tokens to climb higher
