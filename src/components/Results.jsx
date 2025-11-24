@@ -1,5 +1,7 @@
 // import Equation from "./Equations";
+import Leaderboard from "./Leaderboard";
 import MathText from "../utils/MathTex";
+import { useState } from "react";
 const Results = ({
   score = 0,
   totalQuestions = 0,
@@ -9,11 +11,11 @@ const Results = ({
   currentLevel = 1,
   onNextLevel,
 }) => {
-  // defensive defaults to avoid NaN / crashes
   const totalQ = Number(totalQuestions) || 0;
   const sc = Number(score) || 0;
   const tr = Number(totalRewards) || 0;
   const answers = Array.isArray(answerHistory) ? answerHistory : [];
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const percentage = totalQ ? Math.round((sc / totalQ) * 100) : 0;
 
@@ -32,7 +34,7 @@ const Results = ({
       if (currentLevel < 4)
       onNextLevel(currentLevel + 1);
     else{
-      onNextLevel(1); // reset to level 1 
+      onNextLevel(1); 
     }
     }
     if (typeof resetQuiz === "function") {
@@ -116,7 +118,7 @@ const Results = ({
                   <div className="p-6 rounded-2xl bg-gray-50 text-center text-gray-600">No answers to review.</div>
                 ) : (
                   answers.map((answer, index) => {
-                    // prefer unique key if available
+                    
                     const key = answer.id ?? answer.question ?? index;
                     const isCorrect = Boolean(answer.isCorrect);
                     const reward = Number(answer.reward) || 0;
@@ -196,7 +198,7 @@ const Results = ({
 
               <button
                 type="button"
-                onClick={() => console.log("Leaderboard clicked")}
+                onClick={() => { setShowLeaderboard(true); console.log("Leaderboard clicked"); }}
                 className="bg-white border-2 border-gray-300 text-gray-800 font-black py-5 px-6 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 transform hover:scale-105 active:scale-95 text-lg"
               >
                 Leaderboard
@@ -225,7 +227,8 @@ const Results = ({
             </div>
           </div>
         </div>
-
+              
+                
         {/* Motivational Footer */}
         <div className="text-center mt-8 animate-fade-in" style={{ animationDelay: "0.5s" }}>
           <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30">
@@ -234,6 +237,7 @@ const Results = ({
             </p>
           </div>
         </div>
+        <Leaderboard isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} tokens={tr} score={score} />
       </div>
     </div>
   );
